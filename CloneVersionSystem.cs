@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Clones
 {
@@ -13,6 +11,7 @@ namespace Clones
         {
             list.Add(value);
         }
+
         public int Pop()
         {
             if (IsEmpty()) throw new InvalidOperationException();
@@ -30,24 +29,22 @@ namespace Clones
 
         public ListStack Copy() //new
         {
-            return new ListStack{list = new List<int>(list)};
+            return new ListStack {list = new List<int>(list)};
         }
-
-
     }
 
     public class Clone
     {
         public ListStack LearnedProgramms;
         public ListStack RollbackedProgramms;
-        public bool Clonned = false;
+        private bool clonned = false;
 
         public void Learn(int program)
         {
-            if (Clonned)
+            if (clonned)
             {
                 LearnedProgramms = LearnedProgramms.Copy();
-                Clonned = false;
+                clonned = false;
             }
             RollbackedProgramms = new ListStack();
             LearnedProgramms.Push(program);
@@ -55,22 +52,22 @@ namespace Clones
 
         public void RollBack()
         {
-            if (Clonned)
+            if (clonned)
             {
                 LearnedProgramms = LearnedProgramms.Copy();
                 RollbackedProgramms = RollbackedProgramms.Copy();
-                Clonned = false;
+                clonned = false;
             }
             RollbackedProgramms.Push(LearnedProgramms.Pop());
         }
 
         public void Realern()
         {
-            if (Clonned)
+            if (clonned)
             {
                 LearnedProgramms = LearnedProgramms.Copy();
                 RollbackedProgramms = RollbackedProgramms.Copy();
-                Clonned = false;
+                clonned = false;
             }
             LearnedProgramms.Push(RollbackedProgramms.Pop());
         }
@@ -88,23 +85,24 @@ namespace Clones
             {
                 LearnedProgramms = LearnedProgramms,
                 RollbackedProgramms = RollbackedProgramms,
-                Clonned = true
+                clonned = true
             };
+            this.clonned = true;
             return cln;
         }
     }
 
     public class CloneVersionSystem : ICloneVersionSystem
     {
-        public List<Clone> Clns = new List<Clone>();
+        private List<Clone> clns = new List<Clone>();
 
         public string Execute(string query)
         {
            
             var commands = query.Split();
             var cloneNumber = int.Parse(commands[1]) - 1;
-            if (cloneNumber + 1 > Clns.Count)
-                Clns.Add(new Clone { LearnedProgramms = new ListStack(), RollbackedProgramms = new ListStack() });
+            if (cloneNumber + 1 > clns.Count)
+                clns.Add(new Clone { LearnedProgramms = new ListStack(), RollbackedProgramms = new ListStack() });
             return ExecuteCommand(commands, cloneNumber);
         }
 
@@ -114,19 +112,19 @@ namespace Clones
             switch (commands[0])
             {
                 case "learn":
-                    Clns[cloneNumber].Learn(int.Parse(commands[2]));
+                    clns[cloneNumber].Learn(int.Parse(commands[2]));
                     break;
                 case "rollback":
-                    Clns[cloneNumber].RollBack();
+                    clns[cloneNumber].RollBack();
                     break;
                 case "relearn":
-                    Clns[cloneNumber].Realern();
+                    clns[cloneNumber].Realern();
                     break;
                 case "clone":
-                    Clns.Add(Clns[cloneNumber].MakeCopy());
+                    clns.Add(clns[cloneNumber].MakeCopy());
                     break;
                 case "check":
-                    message = Clns[cloneNumber].Check();
+                    message = clns[cloneNumber].Check();
                     break;
             }
             return message;
