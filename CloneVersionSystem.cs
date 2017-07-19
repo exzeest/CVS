@@ -5,56 +5,34 @@ using System.Linq;
 
 namespace Clones
 {
-    public class ListStack : IEnumerable<int>
+    public class ListStack
     {
-        private class StackItem
+        List<int> list = new List<int>();
+
+        public void Push(int value)
         {
-            public int Value;
-            public StackItem Prev;
+            list.Add(value);
         }
-
-        private StackItem top;
-
-        public void Push(int arg)
-        {
-            var newItem = new StackItem { Value = arg, Prev = top };
-            top = newItem;
-        }
-
-        public bool IsEmpty => top == null;
-
         public int Pop()
         {
-            if (IsEmpty)
-                throw new NullReferenceException("Stack is empty");
-            var result = top.Value;
-            top = top.Prev;
+            if (IsEmpty()) throw new InvalidOperationException();
+            var result = list[list.Count - 1];
+            list.RemoveAt(list.Count - 1);
             return result;
         }
 
+        private bool IsEmpty() => list.Count == 0;
+
         public string Peek()
         {
-            return IsEmpty? null : top.Value.ToString();
+            return IsEmpty() ? null : list[list.Count - 1].ToString();
         }
 
         public ListStack Copy() //new
         {
-            var result = new ListStack();
-            foreach (var value in this.Reverse())
-                result.Push(value);
-            return result;
+            return new ListStack{list = new List<int>(list)};
         }
 
-        public IEnumerator<int> GetEnumerator()
-        {
-            for (var item = top; item != null; item = item.Prev)
-                yield return item.Value;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
     }
 
